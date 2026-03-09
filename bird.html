@@ -36,19 +36,19 @@
   </div>
 
   <script>
-    // Bonus: Randomized Locations
     var ids = [];
     var score = 0;
     var locationsVisited = 0;
     var lastLocation = 0;
+    var gameOver = false;
+
+    // Random locations
     var statueLocation = Math.floor(Math.random() * 35);
     var toucanLocation = Math.floor(Math.random() * 35);
     var lorikeetLocations = [Math.floor(Math.random() * 35), Math.floor(Math.random() * 35)];
     var buntingLocations = [Math.floor(Math.random() * 35), Math.floor(Math.random() * 35), Math.floor(Math.random() * 35), Math.floor(Math.random() * 35), Math.floor(Math.random() * 35)];
-    var gameOver = false;
 
     const field = document.getElementById('game-field');
-
     for (let i = 0; i < 35; i++) { ids.push("img" + i); }
 
     for (let r = 0; r < 5; r++) {
@@ -66,27 +66,24 @@
         field.appendChild(rowDiv);
     }
 
-    // Toucan Movement Logic
     function moveToucan() {
-        let directions = [-7, 7, -1, 1]; // North, South, West, East
-        let move = directions[Math.floor(Math.random() * directions.length)];
-        let newPos = toucanLocation + move;
-        
-        // Boundary Check
-        if (newPos >= 0 && newPos < 35) {
-            toucanLocation = newPos;
-        } else {
-            moveToucan(); // Try again if move is out of bounds
+        let directions = [-7, 7, -1, 1];
+        let validMove = false;
+        while (!validMove) {
+            let move = directions[Math.floor(Math.random() * directions.length)];
+            let newPos = toucanLocation + move;
+            let isRowChange = (Math.abs(move) === 1 && Math.floor(toucanLocation / 7) !== Math.floor(newPos / 7));
+            if (newPos >= 0 && newPos < 35 && !isRowChange) {
+                toucanLocation = newPos;
+                validMove = true;
+            }
         }
     }
 
     function check(position) {
         if(gameOver) return;
-
-        moveToucan(); // Toucan moves on every click
-
-        let id = ids[position];
-        let imageElement = document.getElementById(id);
+        moveToucan();
+        let imageElement = document.getElementById(ids[position]);
 
         if(position === statueLocation) {
             imageElement.src = "statue.jpg";
@@ -95,7 +92,8 @@
         } else if (position === toucanLocation) {
             imageElement.src = "toucan.jpg";
             score += 5;
-            gameOver = true; // Ends game when toucan lands on player
+            gameOver = true;
+            alert("Toucan caught you! Game Over.");
         } else if (lorikeetLocations.includes(position)) {
             imageElement.src = "lorikeet.jpg";
             score += 3;
@@ -105,16 +103,32 @@
         } else {
             imageElement.src = "bush.jpg";
         }
-
         locationsVisited++;
         lastLocation = position;
-
         document.getElementById("locations").innerHTML = "Locations Visited: " + locationsVisited;
         document.getElementById("score").innerHTML = "Score: " + score;
     }
 
     function help() {
-        // ... (Keep your existing help logic)
+        let helpElement = document.getElementById("help-report");
+        let neighbors = [(lastLocation + 1) % 35, (lastLocation - 1 + 35) % 35, (lastLocation + 7) % 35, (lastLocation - 7 + 35) % 35];
+        
+        for (let n of neighbors) {
+            if (buntingLocations.includes(n)) { helpElement.innerHTML = "cheep"; return; }
+        }
+
+        let lastRow = Math.floor(lastLocation / 7);
+        let lastCol = lastLocation % 7;
+        let tRow = Math.floor(toucanLocation / 7);
+        let tCol = toucanLocation % 7;
+
+        if (Math.abs(lastRow - tRow) <= 1 && Math.abs(lastCol - tCol) <= 1) {
+            helpElement.innerHTML = "caw";
+        } else if (Math.abs(lastRow - Math.floor(statueLocation / 7)) <= 1 && Math.abs(lastCol - (statueLocation % 7)) <= 1) {
+            helpElement.innerHTML = "thrrum";
+        } else {
+            helpElement.innerHTML = "silence";
+        }
     }
   </script>
 </body>
