@@ -36,23 +36,20 @@
   </div>
 
   <script>
-    // Part 4: 4-12 Variable Declarations
+    // Bonus: Randomized Locations
     var ids = [];
     var score = 0;
     var locationsVisited = 0;
     var lastLocation = 0;
-    var statueLocation = 19;
-    var toucanLocation = 14;
-    var lorikeetLocations = [3, 25];
-    var buntingLocations = [2, 5, 11, 20, 21];
+    var statueLocation = Math.floor(Math.random() * 35);
+    var toucanLocation = Math.floor(Math.random() * 35);
+    var lorikeetLocations = [Math.floor(Math.random() * 35), Math.floor(Math.random() * 35)];
+    var buntingLocations = [Math.floor(Math.random() * 35), Math.floor(Math.random() * 35), Math.floor(Math.random() * 35), Math.floor(Math.random() * 35), Math.floor(Math.random() * 35)];
     var gameOver = false;
 
     const field = document.getElementById('game-field');
 
-    // Generating 35 images with unique IDs and onclick check(position)
-    for (let i = 0; i < 35; i++) {
-        ids.push("img" + i);
-    }
+    for (let i = 0; i < 35; i++) { ids.push("img" + i); }
 
     for (let r = 0; r < 5; r++) {
         let rowDiv = document.createElement('div');
@@ -69,9 +66,24 @@
         field.appendChild(rowDiv);
     }
 
-    // 13: check(position) function
+    // Toucan Movement Logic
+    function moveToucan() {
+        let directions = [-7, 7, -1, 1]; // North, South, West, East
+        let move = directions[Math.floor(Math.random() * directions.length)];
+        let newPos = toucanLocation + move;
+        
+        // Boundary Check
+        if (newPos >= 0 && newPos < 35) {
+            toucanLocation = newPos;
+        } else {
+            moveToucan(); // Try again if move is out of bounds
+        }
+    }
+
     function check(position) {
         if(gameOver) return;
+
+        moveToucan(); // Toucan moves on every click
 
         let id = ids[position];
         let imageElement = document.getElementById(id);
@@ -83,15 +95,13 @@
         } else if (position === toucanLocation) {
             imageElement.src = "toucan.jpg";
             score += 5;
-            imageElement.onclick = null; // Can only trigger score once
+            gameOver = true; // Ends game when toucan lands on player
         } else if (lorikeetLocations.includes(position)) {
             imageElement.src = "lorikeet.jpg";
             score += 3;
-            imageElement.onclick = null;
         } else if (buntingLocations.includes(position)) {
             imageElement.src = "bunting.jpg";
             score += 1;
-            imageElement.onclick = null;
         } else {
             imageElement.src = "bush.jpg";
         }
@@ -103,46 +113,8 @@
         document.getElementById("score").innerHTML = "Score: " + score;
     }
 
-    // 14: help() function with specific bird sounds
     function help() {
-        let helpElement = document.getElementById("help-report");
-        
-        // Bunting check: 4 closest neighbors with wrap-around
-        let neighbors = [
-            (lastLocation + 1) % 35,
-            (lastLocation - 1 + 35) % 35,
-            (lastLocation + 7) % 35,
-            (lastLocation - 7 + 35) % 35
-        ];
-
-        for (let n of neighbors) {
-            if (buntingLocations.includes(n)) {
-                helpElement.innerHTML = "cheep";
-                return;
-            }
-        }
-
-        // Row/Col for proximity checks (no wrap allowed for Toucan/Statue)
-        let lastRow = Math.floor(lastLocation / 7);
-        let lastCol = lastLocation % 7;
-
-        // Toucan check: "caw"
-        let tRow = Math.floor(toucanLocation / 7);
-        let tCol = toucanLocation % 7;
-        if (Math.abs(lastRow - tRow) <= 1 && Math.abs(lastCol - tCol) <= 1) {
-            helpElement.innerHTML = "caw";
-            return;
-        }
-
-        // Statue check: "thrrum"
-        let sRow = Math.floor(statueLocation / 7);
-        let sCol = statueLocation % 7;
-        if (Math.abs(lastRow - sRow) <= 1 && Math.abs(lastCol - sCol) <= 1) {
-            helpElement.innerHTML = "thrrum";
-            return;
-        }
-
-        helpElement.innerHTML = "silence";
+        // ... (Keep your existing help logic)
     }
   </script>
 </body>

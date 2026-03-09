@@ -28,35 +28,34 @@
 
         function recordTime() {
             haltTime = Date.now();
-            console.log("Halt Time Captured: " + haltTime);
         }
 
         document.getElementById("haltButton").onclick = recordTime;
 
-        // Part 6: Function to handle countdown and reflex check
         function beginTime() {
-            haltTime = undefined; // Reset for a new attempt
-
-            // Loop to invoke setTimeout 6 times (i=0 to 5)
-            for (let i = 0; i < 6; i++) {
+            haltTime = undefined; 
+            
+            // Bonus: Random start value between 2 and 10
+            let countdownStart = Math.floor(Math.random() * 9) + 2;
+            
+            // Loop for countdown
+            for (let i = 0; i <= countdownStart; i++) {
                 setTimeout(function() {
-                    // Update element with id 'counter' to current i
-                    document.getElementById("counter").innerHTML = i;
-                }, (5 - i) * 1000); // Wait (5-i) seconds
+                    document.getElementById("counter").innerHTML = (countdownStart - i);
+                }, i * 1000);
             }
 
-            // Final check after 5000 milliseconds
+            // Final check after the randomized duration
             setTimeout(function() {
                 if (haltTime === undefined) {
                     document.getElementById("target").innerHTML = "Not soon enough";
                 } else {
                     let targetTime = Date.now();
                     let elapsed = targetTime - haltTime;
-                    document.getElementById("target").innerHTML = "Time was " + elapsed;
+                    document.getElementById("target").innerHTML = "Time was " + elapsed + "ms";
                 }
-            }, 5000);
+            }, countdownStart * 1000);
         }
     </script>
-
 </body>
 </html>

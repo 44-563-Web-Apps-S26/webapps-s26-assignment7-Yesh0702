@@ -31,6 +31,7 @@
         <button class="btn btn-primary" onclick="addEnd()">Add end</button>
         <button class="btn btn-secondary" onclick="addFront()">Add front</button>
         <button class="btn btn-danger" onclick="remove()">Remove</button>
+        <button class="btn btn-warning" onclick="shuffle()">Shuffle</button>
 
         <div class="flex-container mt-3" id="target">
             <div class="divlist">Item 1</div>
@@ -39,7 +40,6 @@
     </div>
 
     <script>
-        // Add end function
         function addEnd() {
             let inputVal = document.getElementById("userInput").value;
             let newDiv = document.createElement("div");
@@ -49,30 +49,39 @@
             document.getElementById("userInput").value = "";
         }
 
-        // 2-4: Remove function for the middle/second element
         function remove() {
             let divListItems = document.getElementsByClassName("divlist");
             let len = divListItems.length;
-            
             if (len > 1) {
-                divListItems[1].remove(); // Remove index 1
+                divListItems[1].remove(); 
             } else if (len === 1) {
-                divListItems[0].remove(); // Remove remaining
+                divListItems[0].remove();
             }
         }
 
-        // 5-8: Add front function
         function addFront() {
             let inputVal = document.getElementById("userInput").value;
             let newDiv = document.createElement("div");
             newDiv.innerHTML = inputVal;
             newDiv.className = "divlist";
-            
             let container = document.getElementById("target");
-            // Insert before the very first child
             container.insertBefore(newDiv, container.firstChild);
-            
             document.getElementById("userInput").value = "";
+        }
+
+        // Bonus: Shuffle logic to swap two random items
+        function shuffle() {
+            let items = document.getElementsByClassName("divlist");
+            if (items.length < 2) return;
+            
+            // Randomly pick two indices
+            let i = Math.floor(Math.random() * items.length);
+            let j = Math.floor(Math.random() * items.length);
+            
+            // Swap innerHTML
+            let temp = items[i].innerHTML;
+            items[i].innerHTML = items[j].innerHTML;
+            items[j].innerHTML = temp;
         }
     </script>
 </body>
